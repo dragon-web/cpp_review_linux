@@ -1,0 +1,63 @@
+函数的隐含储存类型是extern,函数的形参或变量的储存类型为auto
+
+问题就出在地址相不相同，如果按照两个进程各处在独自的虚拟进程地址空间分析的话，这个题很容易会选择第四个答案，
+但是Linux中的资源分配都是虚拟机制，也就是说，他们还是会共用一个虚拟的地址，但是映射到物理内存就可能会不一样。
+
+
+其实刚刚fork出来不止虚拟地址一样，物理地址也一样。当进程发生分歧时，即修改此变量时，才会分配不同的物理地址，
+也就是copy-on-write，写时复制,也就是发生了写时拷贝
+
+
+register修饰符暗示编译程序相应的变量将被频繁地使用，如果可能的话，应将其保存在CPU的寄存器中，以加快其存储速度。
+
+
+形参的个数与类型也相同，但形参类型顺序不同，也构成重载
+注意顺序不同也可以构成重载
+
+
+#include <iostream>
+using namespace std;
+
+struct data {
+  int type;
+
+  struct {
+    unsigned int a:1;
+    unsigned int b:1;
+    unsigned int c:4;
+    unsigned int d:4;
+    unsigned int e:4;
+    unsigned int f:4;
+    unsigned int g:4;
+    unsigned int h:8;
+    unsigned int i:8;
+
+  } flags;
+
+  struct {
+    unsigned int a:1;
+    unsigned int b:1;
+
+  } flagsEx;
+
+};
+
+int main() {
+  data temp;
+  int a = sizeof(data);
+  int b = sizeof(temp);
+
+  data *pTemp = new data();
+  int c = sizeof(pTemp);
+  delete pTemp;
+  pTemp = NULL;
+
+  cout << a << ", " << b << ", " << c << endl;
+
+  return 0;
+
+}
+
+
+
+
